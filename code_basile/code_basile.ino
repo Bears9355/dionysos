@@ -39,11 +39,14 @@ const long delaiIntervalleDeMesures = 2000;
 Adafruit_BME680 bme(BME_CS); // hardware SPI
 //Adafruit_BME680 bme(BME_CS, BME_MOSI, BME_MISO,  BME_SCK);
 
+int time;
+
 void setup() {
   Serial.begin(9600);
   SD.begin(SD_CS);
   while (!Serial);
   Serial.println(F("BME680 test"));
+  time = 0;
 
   if (!bme.begin()) {
     Serial.println("Could not find a valid BME680 sensor, check wiring!");
@@ -54,14 +57,14 @@ void setup() {
   if (!SD.begin(SD_CS)) {
     Serial.println();
     Serial.println();
-    Serial.println(F("Échec de l'initialisation du lecteur de SD card. Vérifiez :"));
-    Serial.println(F("1. que la carte SD soit bien insérée"));
-    Serial.println(F("2. que votre câblage soit bon"));
+    Serial.println(F("Echec de l'initialisation du lecteur de SD card. Verifiez :"));
+    Serial.println(F("1. que la carte SD soit bien inseree"));
+    Serial.println(F("2. que votre cablage soit bon"));
     Serial.println(F("3. que la variable 'sdCardPinChipSelect' corresponde bien au branchement de la pin CS de votre carte SD sur l'Arduino"));
-    Serial.println(F("Et appuyez sur le bouton RESET de votre Arduino une fois le pb résolu, pour redémarrer ce programme !"));
+    Serial.println(F("Et appuyez sur le bouton RESET de votre Arduino une fois le pb resolu, pour redemarrer ce programme !"));
     while (true);
   }
-  Serial.println(F(" réussi !"));
+  Serial.println(F(" reussi !"));
   Serial.println();
 
   // Set up oversampling and filter initialization
@@ -89,7 +92,7 @@ void loop() {
 
   // Vérification si données bien reçues
   if (isnan(tauxHumidite) || isnan(temperature) || isnan(altitude) || isnan(pression) || isnan(resistanceGaz)) {
-    Serial.println(F("Une des valeurs du BME n'est pas valide ou absente. Est-il bien branché ?"));
+    Serial.println(F("Une des valeurs du BME n'est pas valide ou absente. Est-il bien branche ?"));
     delay(2000);
     return;         // Si aucune valeur n'a été reçue par l'Arduino, on attend 2 secondes, puis on redémarre la fonction loop()
   }
@@ -112,16 +115,14 @@ void loop() {
   Serial.print("Altitude = "); Serial.print(altitudeArrondie); Serial.println(" m - ");
   Serial.print("Pression = "); Serial.print(pressionArrondie); Serial.println(" hPa - ");
   Serial.print("Gaz = "); Serial.print(gazArrondie); Serial.println(" kOhm - ");
-
-  // Gérer le temps pour avoir des données selon un temps
-  unsigned long time = millis();
+  Serial.print("Temps : "); Serial.print(time); Serial.println("");
 
   // Enregistrement de ces données sur la carte SD
   monFichier = SD.open(nomDuFichier, FILE_WRITE);
   if (monFichier) {    
     monFichier.print(tauxHumiditeArrondi);
     monFichier.print(";");                  // Délimiteur du fichier CSV
-    monFichier.println(temperatureArrondie);
+    monFichier.print(temperatureArrondie);
     monFichier.print(";");
     monFichier.print(altitudeArrondie);
     monFichier.print(";");
@@ -130,39 +131,16 @@ void loop() {
     monFichier.print(gazArrondie);
     monFichier.print(";");
     monFichier.print(time);
+    monFichier.println();
     monFichier.close();                     // L'enregistrement des données se fait au moment de la clôture du fichier
-    Serial.println(F("Enregistrement réussi en carte SD"));
+    Serial.println(F("Enregistrement reussi en carte SD"));
   }
   else {
-    Serial.println(F("Erreur lors de la tentative d'ouverture du fichier en écriture, sur la carte SD"));
+    Serial.println(F("Erreur lors de la tentative d'ouverture du fichier en ecriture, sur la carte SD"));
   }
 
   // Temporisation de X secondes (2 sec min, pour que le BME680 ait le temps de faire ses mesures)
   Serial.println();
+  time = time + 2; // On rajoute 2 secondes au time pour comptabiliser le délai
   delay(2000);
 }
-
-
-/*
-Serial.print("Temperature = ");
-  Serial.print(bme.temperature);
-  Serial.println(" *C");
-
-  Serial.print("Pressure = ");
-  Serial.print(bme.pressure / 100.0);
-  Serial.println(" hPa");
-
-  Serial.print("Humidity = ");
-  Serial.print(bme.humidity);
-  Serial.println(" %");
-
-  Serial.print("Gas = ");
-  Serial.print(bme.gas_resistance / 1000.0);
-  Serial.println(" KOhms");
-
-  Serial.print("Approx. Altitude = ");
-  Serial.print(bme.readAltitude(SEALEVELPRESSURE_HPA));
-  Serial.println(" m");
-
-  Serial.println();
-  */
