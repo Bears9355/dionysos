@@ -1,7 +1,5 @@
 <h3 align="center">Equipe du concours Cansat</h3>
 
-<p align="left"> <a href="https://github.com/ryo-ma/github-profile-trophy"><img src="https://github-profile-trophy.vercel.app/?username=bears9355" alt="bears9355" /></a> </p>
-
 - dec16a [Code pour le BMP280](https://github.com/Bears9355/dionysos/tree/main/sketch_dec16a)
 
 - code_basile [Code complet pour BME680 + carte SD](https://github.com/Bears9355/dionysos/tree/main/code_basile)
